@@ -31,14 +31,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.netty.util.internal.StringUtil.*;
 
+/**
+ * 资源泄露检测器 
+ */
 public final class ResourceLeakDetector<T> {
 
-    private static final String PROP_LEVEL_OLD = "io.netty.leakDetectionLevel";
-    private static final String PROP_LEVEL = "io.netty.leakDetection.level";
+    private static final String PROP_LEVEL_OLD = "io.netty.leakDetectionLevel";//老版本获取Level级别
+    private static final String PROP_LEVEL = "io.netty.leakDetection.level";//新版本获取Level级别
     private static final Level DEFAULT_LEVEL = Level.SIMPLE;
 
-    private static final String PROP_MAX_RECORDS = "io.netty.leakDetection.maxRecords";
-    private static final int DEFAULT_MAX_RECORDS = 4;
+    private static final String PROP_MAX_RECORDS = "io.netty.leakDetection.maxRecords";//获取最大记录数
+    private static final int DEFAULT_MAX_RECORDS = 4;//默认最大记录数
     private static final int MAX_RECORDS;
 
     /**
@@ -70,6 +73,7 @@ public final class ResourceLeakDetector<T> {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ResourceLeakDetector.class);
 
+    //初始化数据
     static {
         final boolean disabled;
         if (SystemPropertyUtil.get("io.netty.noResourceLeakDetection") != null) {
@@ -84,6 +88,7 @@ public final class ResourceLeakDetector<T> {
 
         Level defaultLevel = disabled? Level.DISABLED : DEFAULT_LEVEL;
 
+        //获取新老版本Level级别
         // First read old property name
         String levelStr = SystemPropertyUtil.get(PROP_LEVEL_OLD, defaultLevel.name()).trim().toUpperCase();
 

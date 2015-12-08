@@ -17,6 +17,7 @@ package io.netty.util.internal;
 
 /**
  * Counter for long.
+ * 计数器
  */
 public interface LongCounter {
     void add(long delta);

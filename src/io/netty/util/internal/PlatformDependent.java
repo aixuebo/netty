@@ -81,9 +81,9 @@ public final class PlatformDependent {
 
     private static final boolean HAS_JAVASSIST = hasJavassist0();
 
-    private static final File TMPDIR = tmpdir0();
+    private static final File TMPDIR = tmpdir0();//临时目录
 
-    private static final int BIT_MODE = bitMode0();
+    private static final int BIT_MODE = bitMode0();//操作系统多少位
 
     private static final int ADDRESS_SIZE = addressSize0();
 
@@ -478,6 +478,7 @@ public final class PlatformDependent {
 
     /**
      * Returns a new concurrent {@link Deque}.
+     * 创建一个新的队列
      */
     public static <C> Deque<C> newConcurrentDeque() {
         if (javaVersion() < 7) {
@@ -487,6 +488,7 @@ public final class PlatformDependent {
         }
     }
 
+    //是安卓平台,因为能加载android.app.Application类库
     private static boolean isAndroid0() {
         boolean android;
         try {
@@ -503,6 +505,7 @@ public final class PlatformDependent {
         return android;
     }
 
+    //true表示是windows平台
     private static boolean isWindows0() {
         boolean windows = SystemPropertyUtil.get("os.name", "").toLowerCase(Locale.US).contains("win");
         if (windows) {
@@ -511,11 +514,15 @@ public final class PlatformDependent {
         return windows;
     }
 
+    //windows没有root账户,因此返回false
+    //true表示当前用户是root用户
+    //判断标准是uid=0表示root用户,如果uid不是0,但是可以不受限制访问0-1023端口,则也认为是root账户
     private static boolean isRoot0() {
-        if (isWindows()) {
+        if (isWindows()) {//是windows,则返回false,说明肯定不是linux
             return false;
         }
 
+        //获取uid对应的值,是一个整数
         String[] ID_COMMANDS = { "/usr/bin/id", "/bin/id", "/usr/xpg4/bin/id", "id"};
         Pattern UID_PATTERN = Pattern.compile("^(?:0|[1-9][0-9]*)$");
         for (String idCmd: ID_COMMANDS) {
@@ -559,7 +566,7 @@ public final class PlatformDependent {
                 }
             }
 
-            if (uid != null && UID_PATTERN.matcher(uid).matches()) {
+            if (uid != null && UID_PATTERN.matcher(uid).matches()) {//uid是0,说明是root账户
                 logger.debug("UID: {}", uid);
                 return "0".equals(uid);
             }
@@ -567,6 +574,7 @@ public final class PlatformDependent {
 
         logger.debug("Could not determine the current UID using /usr/bin/id; attempting to bind at privileged ports.");
 
+        //没有权限,说明不是root账户
         Pattern PERMISSION_DENIED = Pattern.compile(".*(?:denied|not.*permitted).*");
         for (int i = 1023; i > 0; i --) {
             ServerSocket ss = null;
@@ -604,6 +612,12 @@ public final class PlatformDependent {
         return false;
     }
 
+    /**
+     * 1.如果是安卓版本,java版本至少是6
+     * 2.有java.time.Clock类,说明java版本是8
+     * 3.如果java.util.concurrent.LinkedTransferQueue,则说明是java7
+     * 4.默认返回java版本为6
+     */
     @SuppressWarnings("LoopStatementThatDoesntLoop")
     private static int javaVersion0() {
         int javaVersion;
@@ -611,11 +625,12 @@ public final class PlatformDependent {
         // Not really a loop
         for (;;) {
             // Android
-            if (isAndroid()) {
+            if (isAndroid()) {//安卓的话,java版本至少是6
                 javaVersion = 6;
                 break;
             }
 
+            //有java.time.Clock类,说明java版本是8
             try {
                 Class.forName("java.time.Clock", false, getClassLoader(Object.class));
                 javaVersion = 8;
@@ -624,6 +639,7 @@ public final class PlatformDependent {
                 // Ignore
             }
 
+            //如果java.util.concurrent.LinkedTransferQueue,则说明是java7
             try {
                 Class.forName("java.util.concurrent.LinkedTransferQueue", false, getClassLoader(BlockingQueue.class));
                 javaVersion = 7;
@@ -679,6 +695,7 @@ public final class PlatformDependent {
         }
     }
 
+    //最大可用内存
     private static long maxDirectMemory0() {
         long maxDirectMemory = 0;
         try {
@@ -767,6 +784,12 @@ public final class PlatformDependent {
         }
     }
 
+    /**
+     * 1.io.netty.tmpdir
+     * 2.java.io.tmpdir
+     * 3.System.getenv("TEMP")
+     * 创建一个临时目录File对象
+     */
     private static File tmpdir0() {
         File f;
         try {
@@ -826,16 +849,20 @@ public final class PlatformDependent {
         return f;
     }
 
+    /**
+     * 创建一个目录,返回该目录对应的File对象
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static File toDirectory(String path) {
         if (path == null) {
             return null;
         }
 
+        //path是一个目录,创建该目录
         File f = new File(path);
         f.mkdirs();
 
-        if (!f.isDirectory()) {
+        if (!f.isDirectory()) {//确定f一定是一个目录
             return null;
         }
 
@@ -846,6 +873,7 @@ public final class PlatformDependent {
         }
     }
 
+    //返回多少位操作系统
     private static int bitMode0() {
         // Check user-specified bit mode first.
         int bitMode = SystemPropertyUtil.getInt("io.netty.bitMode", 0);
@@ -896,6 +924,7 @@ public final class PlatformDependent {
         return PlatformDependent0.addressSize();
     }
 
+    //判断字节是否相同
     private static boolean safeEquals(byte[] bytes1, int startPos1, int endPos1,
                                       byte[] bytes2, int startPos2, int endPos2) {
         final int len1 = endPos1 - startPos1;

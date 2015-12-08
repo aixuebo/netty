@@ -33,17 +33,18 @@ import java.nio.charset.Charset;
 
 /**
  * A skeletal implementation of a buffer.
+ * 一个Buffer的骨架实现
  */
 public abstract class AbstractByteBuf extends ByteBuf {
 
     static final ResourceLeakDetector<ByteBuf> leakDetector = new ResourceLeakDetector<ByteBuf>(ByteBuf.class);
 
-    int readerIndex;
-    int writerIndex;
-    private int markedReaderIndex;
-    private int markedWriterIndex;
+    int readerIndex;//读到哪里了
+    int writerIndex;//写到哪里了
+    private int markedReaderIndex;//标记读到哪里了,以后可以回滚
+    private int markedWriterIndex;//标记写到哪里了,以后可以回滚
 
-    private int maxCapacity;
+    private int maxCapacity;//最大容量
 
     private SwappedByteBuf swappedBuf;
 
@@ -978,6 +979,7 @@ public abstract class AbstractByteBuf extends ByteBuf {
         return forEachByteAsc0(index, length, processor);
     }
 
+    //从前往后一个字节一个字节的处理数据,返回处理了多少个字节
     private int forEachByteAsc0(int index, int length, ByteProcessor processor) {
         if (processor == null) {
             throw new NullPointerException("processor");
@@ -1019,6 +1021,7 @@ public abstract class AbstractByteBuf extends ByteBuf {
         return forEachByteDesc0(index, length, processor);
     }
 
+    //从后往前,一个一个字节处理,返回处理了多少个字节
     private int forEachByteDesc0(int index, int length, ByteProcessor processor) {
 
         if (processor == null) {
@@ -1097,6 +1100,7 @@ public abstract class AbstractByteBuf extends ByteBuf {
         }
     }
 
+    //校验索引+fieldLength长度没有超过capacity限制
     protected final void checkIndex(int index, int fieldLength) {
         ensureAccessible();
         if (fieldLength < 0) {
@@ -1128,6 +1132,7 @@ public abstract class AbstractByteBuf extends ByteBuf {
      * Throws an {@link IndexOutOfBoundsException} if the current
      * {@linkplain #readableBytes() readable bytes} of this buffer is less
      * than the specified value.
+     * 校验是否还可以读取minimumReadableBytes个字节
      */
     protected final void checkReadableBytes(int minimumReadableBytes) {
         ensureAccessible();
@@ -1144,6 +1149,7 @@ public abstract class AbstractByteBuf extends ByteBuf {
     /**
      * Should be called by every method that tries to access the buffers content to check
      * if the buffer was released before.
+     * 还有引用可是使用.确保可用该对象,即该对象没有被销毁
      */
     protected final void ensureAccessible() {
         if (refCnt() == 0) {
@@ -1156,6 +1162,7 @@ public abstract class AbstractByteBuf extends ByteBuf {
         this.writerIndex = writerIndex;
     }
 
+    //销毁所有的标记索引信息
     final void discardMarks() {
         markedReaderIndex = markedWriterIndex = 0;
     }

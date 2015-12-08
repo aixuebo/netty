@@ -103,6 +103,7 @@ public abstract class ConstantPool<T extends Constant<T>> {
         }
     }
 
+    //校验参数name不是null,也不是""
     private String checkNotNullAndNotEmpty(String name) {
         ObjectUtil.checkNotNull(name, "name");
 
@@ -115,6 +116,7 @@ public abstract class ConstantPool<T extends Constant<T>> {
 
     protected abstract T newConstant(int id, String name);
 
+    //获取下一个ID
     @Deprecated
     public final int nextId() {
         synchronized (constants) {

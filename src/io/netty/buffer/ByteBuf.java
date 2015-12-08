@@ -30,6 +30,7 @@ import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * A random and sequential accessible sequence of zero or more bytes (octets).
+ * 随机或者连续访问0个或者更多个字节,即访问单位是8个位组成的一个字节
  * This interface provides an abstract view for one or more primitive byte
  * arrays ({@code byte[]}) and {@linkplain ByteBuffer NIO buffers}.
  *
@@ -290,6 +291,7 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
 
     /**
      * Returns the {@code readerIndex} of this buffer.
+     * 获取读下标
      */
     public abstract int readerIndex();
 
@@ -299,12 +301,14 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @throws IndexOutOfBoundsException
      *         if the specified {@code readerIndex} is
      *            less than {@code 0} or
-     *            greater than {@code this.writerIndex}
+     *            greater than {@code this.writerIndex}、
+     * 设置读下标           
      */
     public abstract ByteBuf readerIndex(int readerIndex);
 
     /**
      * Returns the {@code writerIndex} of this buffer.
+     * 读取写下标
      */
     public abstract int writerIndex();
 
@@ -315,6 +319,7 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      *         if the specified {@code writerIndex} is
      *            less than {@code this.readerIndex} or
      *            greater than {@code this.capacity}
+     * 设置写下标           
      */
     public abstract ByteBuf writerIndex(int writerIndex);
 
@@ -368,24 +373,28 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      *         if the specified {@code writerIndex} is less than the specified
      *         {@code readerIndex} or if the specified {@code writerIndex} is
      *         greater than {@code this.capacity}
+     * 设置读写索引下标        
      */
     public abstract ByteBuf setIndex(int readerIndex, int writerIndex);
 
     /**
      * Returns the number of readable bytes which is equal to
      * {@code (this.writerIndex - this.readerIndex)}.
+     * 还能读多少个字节
      */
     public abstract int readableBytes();
 
     /**
      * Returns the number of writable bytes which is equal to
      * {@code (this.capacity - this.writerIndex)}.
+     * 还能写多少个字节
      */
     public abstract int writableBytes();
 
     /**
      * Returns the maximum possible number of writable bytes, which is equal to
      * {@code (this.maxCapacity - this.writerIndex)}.
+     * 最多还可以写多少个字节
      */
     public abstract int maxWritableBytes();
 
@@ -393,11 +402,13 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * Returns {@code true}
      * if and only if {@code (this.writerIndex - this.readerIndex)} is greater
      * than {@code 0}.
+     * 能否继续可读
      */
     public abstract boolean isReadable();
 
     /**
      * Returns {@code true} if and only if this buffer contains equal to or more than the specified number of elements.
+     * 能否还能读取size个字节
      */
     public abstract boolean isReadable(int size);
 
@@ -405,12 +416,14 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * Returns {@code true}
      * if and only if {@code (this.capacity - this.writerIndex)} is greater
      * than {@code 0}.
+     * 是否还能写数据
      */
     public abstract boolean isWritable();
 
     /**
      * Returns {@code true} if and only if this buffer has enough room to allow writing the specified number of
      * elements.
+     * 是否还能写size个数据
      */
     public abstract boolean isWritable(int size);
 
@@ -430,6 +443,7 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * reposition the current {@code readerIndex} to the marked
      * {@code readerIndex} by calling {@link #resetReaderIndex()}.
      * The initial value of the marked {@code readerIndex} is {@code 0}.
+     * 标记读取到哪里了,以后可以回滚
      */
     public abstract ByteBuf markReaderIndex();
 
@@ -440,6 +454,7 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @throws IndexOutOfBoundsException
      *         if the current {@code writerIndex} is less than the marked
      *         {@code readerIndex}
+     * 回滚读标记        
      */
     public abstract ByteBuf resetReaderIndex();
 
@@ -448,6 +463,7 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * reposition the current {@code writerIndex} to the marked
      * {@code writerIndex} by calling {@link #resetWriterIndex()}.
      * The initial value of the marked {@code writerIndex} is {@code 0}.
+     * 标记写到哪里了,以后可以回滚
      */
     public abstract ByteBuf markWriterIndex();
 
@@ -458,6 +474,7 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @throws IndexOutOfBoundsException
      *         if the current {@code readerIndex} is greater than the marked
      *         {@code writerIndex}
+     * 回滚写标记        
      */
     public abstract ByteBuf resetWriterIndex();
 
@@ -521,6 +538,7 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @throws IndexOutOfBoundsException
      *         if the specified {@code index} is less than {@code 0} or
      *         {@code index + 1} is greater than {@code this.capacity}
+     * 第index个字节是0,就返回false,其他都返回true        
      */
     public abstract boolean getBoolean(int index);
 
