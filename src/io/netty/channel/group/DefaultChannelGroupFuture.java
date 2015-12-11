@@ -36,19 +36,22 @@ import java.util.Map;
 
 /**
  * The default {@link ChannelGroupFuture} implementation.
+ * 表示一个ChannelGroup全部的Future模式
  */
 final class DefaultChannelGroupFuture extends DefaultPromise<Void> implements ChannelGroupFuture {
 
     private final ChannelGroup group;
+    //对应每一个Channel与之对应ChannelFuture
     private final Map<Channel, ChannelFuture> futures;
     private int successCount;
     private int failureCount;
 
+    //当一个Future完成的时候调用该方法
     private final ChannelFutureListener childListener = new ChannelFutureListener() {
         @Override
         public void operationComplete(ChannelFuture future) throws Exception {
             boolean success = future.isSuccess();
-            boolean callSetDone;
+            boolean callSetDone;//true表示全部完成
             synchronized (DefaultChannelGroupFuture.this) {
                 if (success) {
                     successCount ++;
@@ -60,17 +63,19 @@ final class DefaultChannelGroupFuture extends DefaultPromise<Void> implements Ch
                 assert successCount + failureCount <= futures.size();
             }
 
-            if (callSetDone) {
-                if (failureCount > 0) {
+            if (callSetDone) {//全部完成
+                if (failureCount > 0) {//有失败的
                     List<Map.Entry<Channel, Throwable>> failed =
                             new ArrayList<Map.Entry<Channel, Throwable>>(failureCount);
+                    
+                    //添加失败的渠道
                     for (ChannelFuture f: futures.values()) {
                         if (!f.isSuccess()) {
                             failed.add(new DefaultEntry<Channel, Throwable>(f.channel(), f.cause()));
                         }
                     }
                     setFailure0(new ChannelGroupException(failed));
-                } else {
+                } else {//全部成功
                     setSuccess0();
                 }
             }
@@ -137,11 +142,13 @@ final class DefaultChannelGroupFuture extends DefaultPromise<Void> implements Ch
         return futures.values().iterator();
     }
 
+    //true表示部分成果
     @Override
     public synchronized boolean isPartialSuccess() {
         return successCount != 0 && successCount != futures.size();
     }
 
+    //true表示部分失败
     @Override
     public synchronized boolean isPartialFailure() {
         return failureCount != 0 && failureCount != futures.size();
@@ -201,6 +208,7 @@ final class DefaultChannelGroupFuture extends DefaultPromise<Void> implements Ch
         return (ChannelGroupException) super.cause();
     }
 
+    //设置全部成功后的返回值
     private void setSuccess0() {
         super.setSuccess(null);
     }

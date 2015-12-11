@@ -22,6 +22,7 @@ import io.netty.channel.Channel;
  * Allows to only match some {@link Channel}'s for operations in {@link ChannelGroup}.
  *
  * {@link ChannelMatchers} provide you with helper methods for usual needed implementations.
+ * 渠道选择器,校验是否允许该channel通过匹配
  */
 public interface ChannelMatcher {
 

@@ -106,6 +106,7 @@ public interface ChannelGroupFuture extends Future<Void>, Iterable<ChannelFuture
 
     /**
      * Returns the {@link ChannelGroup} which is associated with this future.
+     * 返回渠道组
      */
     ChannelGroup group();
 
@@ -114,13 +115,15 @@ public interface ChannelGroupFuture extends Future<Void>, Iterable<ChannelFuture
      * is associated with the specified {@link Channel}.
      *
      * @return the matching {@link ChannelFuture} if found.
-     *         {@code null} otherwise.
+     *         {@code null} otherwise.、
+     * 获取该渠道组中某一个渠道对应的渠道返回值        
      */
     ChannelFuture find(Channel channel);
 
     /**
      * Returns {@code true} if and only if all I/O operations associated with
      * this future were successful without any failure.
+     * true表示全部成功
      */
     @Override
     boolean isSuccess();
@@ -131,12 +134,14 @@ public interface ChannelGroupFuture extends Future<Void>, Iterable<ChannelFuture
     /**
      * Returns {@code true} if and only if the I/O operations associated with
      * this future were partially successful with some failure.
+     * true表示部分成功
      */
     boolean isPartialSuccess();
 
     /**
      * Returns {@code true} if and only if the I/O operations associated with
      * this future have failed partially with some success.
+     * true表示部分失败
      */
     boolean isPartialFailure();
 

@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
+ * 先循环i1,在循环i2,即从两个迭代器中依次获取数据
  */
 final class CombinedIterator<E> implements Iterator<E> {
 

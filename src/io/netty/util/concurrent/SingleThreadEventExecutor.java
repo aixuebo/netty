@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 /**
  * Abstract base class for {@link EventExecutor}'s that execute all its submitted tasks in a single thread.
- *
+ * 仅仅用一个线程在执行任务
  */
 public abstract class SingleThreadEventExecutor extends AbstractScheduledEventExecutor {
 
@@ -63,7 +63,16 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         }
     };
 
+    /**
+     * AtomicIntegerFieldUpdater 原子的方式更新int 并且是 volatile类型的字段
+     * 该属性是为了原子的更新state = ST_NOT_STARTED属性状态
+     */
     private static final AtomicIntegerFieldUpdater<SingleThreadEventExecutor> STATE_UPDATER;
+    
+    /**
+     * 子的方式更新volatile类型的字段
+     * 该属性是为了原子的更新threadProperties属性状态
+     */
     private static final AtomicReferenceFieldUpdater<SingleThreadEventExecutor, ThreadProperties> PROPERTIES_UPDATER;
 
     static {
@@ -728,6 +737,9 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
 
     private void doStartThread() {
         assert thread == null;
+        /**
+         * 因此可以看出来,仅仅用一个线程在执行任务
+         */
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -744,6 +756,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
                 } catch (Throwable t) {
                     logger.warn("Unexpected exception from an event executor: ", t);
                 } finally {
+                	//直到状态达到shutting后,才停止循环
                     for (;;) {
                         int oldState = STATE_UPDATER.get(SingleThreadEventExecutor.this);
                         if (oldState >= ST_SHUTTING_DOWN || STATE_UPDATER.compareAndSet(

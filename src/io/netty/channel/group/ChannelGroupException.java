@@ -26,9 +26,12 @@ import java.util.Map;
 
 /**
  * {@link ChannelException} which holds {@link ChannelFuture}s that failed because of an error.
+ * ChannelGroup提交后,有任务执行失败
  */
 public class ChannelGroupException extends ChannelException implements Iterable<Map.Entry<Channel, Throwable>> {
     private static final long serialVersionUID = -4093064295562629453L;
+    
+    //存储每一个失败的channel集合,分别由Channel和Throwable组成
     private final Collection<Map.Entry<Channel, Throwable>> failed;
 
     public ChannelGroupException(Collection<Map.Entry<Channel, Throwable>> causes) {
@@ -44,6 +47,7 @@ public class ChannelGroupException extends ChannelException implements Iterable<
     /**
      * Returns a {@link Iterator} which contains all the {@link Throwable} that was a cause of the failure and the
      * related id of the {@link Channel}.
+     * 迭代每一个失败的渠道以及渠道信息
      */
     @Override
     public Iterator<Map.Entry<Channel, Throwable>> iterator() {

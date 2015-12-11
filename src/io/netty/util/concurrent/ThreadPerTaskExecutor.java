@@ -18,7 +18,11 @@ package io.netty.util.concurrent;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
+/**
+ * 为每一个任务分配一个线程去执行该任务
+ */
 public final class ThreadPerTaskExecutor implements Executor {
+	//线程工厂
     private final ThreadFactory threadFactory;
 
     public ThreadPerTaskExecutor(ThreadFactory threadFactory) {

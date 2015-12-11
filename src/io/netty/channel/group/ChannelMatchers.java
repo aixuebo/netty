@@ -23,6 +23,7 @@ import io.netty.channel.ServerChannel;
  */
 public final class ChannelMatchers {
 
+	//所有的channel都通过
     private static final ChannelMatcher ALL_MATCHER = new ChannelMatcher() {
         @Override
         public boolean matches(Channel channel) {
@@ -30,7 +31,9 @@ public final class ChannelMatchers {
         }
     };
 
+    //必须匹配ServerChannel的子类才允许通过
     private static final ChannelMatcher SERVER_CHANNEL_MATCHER = isInstanceOf(ServerChannel.class);
+    //必须匹配不是ServerChannel的子类
     private static final ChannelMatcher NON_SERVER_CHANNEL_MATCHER = isNotInstanceOf(ServerChannel.class);
 
     private ChannelMatchers() {
@@ -46,6 +49,7 @@ public final class ChannelMatchers {
 
     /**
      * Returns a {@link ChannelMatcher} that matches all {@link Channel}s except the given.
+     * 返回一个非实例的所有channel
      */
     public static ChannelMatcher isNot(Channel channel) {
         return invert(is(channel));
@@ -53,6 +57,7 @@ public final class ChannelMatchers {
 
     /**
      * Returns a {@link ChannelMatcher} that matches the given {@link Channel}.
+     * 返回一个根据实例去匹配的匹配器
      */
     public static ChannelMatcher is(Channel channel) {
         return new InstanceMatcher(channel);
@@ -99,6 +104,7 @@ public final class ChannelMatchers {
     /**
      * Return a composite of the given {@link ChannelMatcher}s. This means all {@link ChannelMatcher} must
      * return {@code true} to match.
+     * 必须所有的渠道选择器都允许通过.才会是true
      */
     public static ChannelMatcher compose(ChannelMatcher... matchers) {
         if (matchers.length < 1) {
@@ -110,6 +116,7 @@ public final class ChannelMatchers {
         return new CompositeMatcher(matchers);
     }
 
+    //必须所有的渠道选择器都允许通过.才会是true
     private static final class CompositeMatcher implements ChannelMatcher {
         private final ChannelMatcher[] matchers;
 
@@ -128,6 +135,7 @@ public final class ChannelMatchers {
         }
     }
 
+    //反转,内部一个渠道匹配器,只要不满足该选择器的都返回true
     private static final class InvertMatcher implements ChannelMatcher {
         private final ChannelMatcher matcher;
 
@@ -141,6 +149,7 @@ public final class ChannelMatchers {
         }
     }
 
+    //必须是某一个channel的实例,才允许匹配成功
     private static final class InstanceMatcher implements ChannelMatcher {
         private final Channel channel;
 
@@ -154,6 +163,7 @@ public final class ChannelMatchers {
         }
     }
 
+    //只要是channel的子类,都可以匹配成功
     private static final class ClassMatcher implements ChannelMatcher {
         private final Class<? extends Channel> clazz;
 

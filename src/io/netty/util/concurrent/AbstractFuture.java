@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
  */
 public abstract class AbstractFuture<V> implements Future<V> {
 
+	//阻塞等候,直到等候结束,查看是否有异常,有异常则抛异常,无异常则返回value值
     @Override
     public V get() throws InterruptedException, ExecutionException {
         await();
@@ -37,6 +38,7 @@ public abstract class AbstractFuture<V> implements Future<V> {
         throw new ExecutionException(cause);
     }
 
+    //在一定时间内获取数据
     @Override
     public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         if (await(timeout, unit)) {
